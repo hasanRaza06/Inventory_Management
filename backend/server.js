@@ -2,15 +2,15 @@ import dotenv from 'dotenv';
 import http from 'http';
 import app from './app.js';
 import { Server } from 'socket.io';
-import { startConsumer } from './kafka/consumer.js';
-import { startProducer } from './kafka/producer.js';
+// import { startConsumer } from './kafka/consumer.js';
+// import { startProducer } from './kafka/producer.js';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-startConsumer();
-startProducer();
+//startConsumer();
+//startProducer();
 
 const server = http.createServer(app);
 export const io = new Server(server, {
