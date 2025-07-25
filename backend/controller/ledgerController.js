@@ -36,7 +36,6 @@ export const getLedger = async (req, res) => {
       }))
     ];
 
-    // Sort all entries by timestamp
     ledger.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     return res.status(200).json({success:true, ledger });

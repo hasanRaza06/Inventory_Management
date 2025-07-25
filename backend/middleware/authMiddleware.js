@@ -17,6 +17,6 @@ export const protect = (req, res, next) => {
 
 export const generateToken = (userId) => {
   return jwt.sign({ userId }, JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: '15d',
   });
 };

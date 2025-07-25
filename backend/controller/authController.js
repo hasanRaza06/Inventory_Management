@@ -5,7 +5,6 @@ import { generateToken } from '../middleware/authMiddleware.js';
 
 const prisma=new PrismaClient();
 
-// Register User
 export const register = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -33,7 +32,6 @@ export const register = async (req, res) => {
   }
 };
 
-// Login User
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;

@@ -2,6 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../components/Spinner';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 const Transactions = () => {
   const [ledger, setLedger] = useState([]);
@@ -23,16 +33,24 @@ const Transactions = () => {
         }
       } catch (error) {
         console.error('Failed to fetch transactions:', error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
     fetchTransactions();
   }, []);
 
+  const chartData = ledger.map((tx) => ({
+    timestamp: new Date(tx.timestamp).toLocaleString(),
+    quantity: tx.quantity,
+    amount:
+      tx.type === 'purchase' ? parseFloat(tx.unit_price) : parseFloat(tx.total_cost),
+    type: tx.type,
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 relative">
-        {loading && <Spinner />} 
+      {loading && <Spinner />}
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">All Transactions</h1>
@@ -42,6 +60,35 @@ const Transactions = () => {
           >
             Back to Dashboard
           </button>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Transaction Trend Over Time
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="timestamp" tick={{ fontSize: 10 }} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                name="Amount (₹)"
+                stroke="#8884d8"
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="quantity"
+                name="Quantity"
+                stroke="#82ca9d"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
 
         <div className="bg-white rounded-lg shadow-md overflow-x-auto border border-gray-200">
@@ -60,14 +107,20 @@ const Transactions = () => {
               {ledger.map((tx, index) => (
                 <tr
                   key={index}
-                  className={`border-b ${tx.type === 'purchase' ? 'bg-red-50' : 'bg-green-50'}`}
+                  className={`border-b ${
+                    tx.type === 'purchase' ? 'bg-red-50' : 'bg-green-50'
+                  }`}
                 >
-                  <td className="px-4 py-2 font-medium text-gray-700">{tx.type.toUpperCase()}</td>
+                  <td className="px-4 py-2 font-medium text-gray-700">
+                    {tx.type.toUpperCase()}
+                  </td>
                   <td className="px-4 py-2">{tx.product_id}</td>
                   <td className="px-4 py-2">{tx.name}</td>
                   <td className="px-4 py-2">{tx.quantity}</td>
                   <td className="px-4 py-2">
-                    {tx.type === 'purchase' ? `₹${tx.unit_price}` : `₹${tx.total_cost}`}
+                    {tx.type === 'purchase'
+                      ? `₹${tx.unit_price}`
+                      : `₹${tx.total_cost}`}
                   </td>
                   <td className="px-4 py-2">
                     {new Date(tx.timestamp).toLocaleString()}

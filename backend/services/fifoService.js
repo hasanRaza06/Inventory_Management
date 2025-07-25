@@ -1,5 +1,6 @@
 import pkg from '@prisma/client';
 import Decimal from 'decimal.js';
+import { io } from '../server.js'; 
 
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
@@ -8,15 +9,22 @@ export const handleEvent = async (event) => {
   const { product_id, event_type, quantity, unit_price, timestamp } = event;
 
   if (event_type === 'purchase') {
-    return await prisma.inventoryBatch.create({
+    const newBatch = await prisma.inventoryBatch.create({
       data: {
         product_id,
         quantity,
-        unit_price: new Decimal(unit_price), // must wrap in Decimal
+        unit_price: new Decimal(unit_price),
         timestamp: new Date(timestamp),
         remaining_quantity: quantity
       }
     });
+
+    io.emit('stock_updated', {
+      message: 'Stock purchased',
+      product_id
+    });
+
+    return newBatch;
   }
 
   if (event_type === 'sale') {
@@ -57,7 +65,7 @@ export const handleEvent = async (event) => {
       throw new Error('Insufficient inventory to fulfill the sale.');
     }
 
-    return await prisma.sale.create({
+    const sale = await prisma.sale.create({
       data: {
         product_id,
         quantity,
@@ -66,6 +74,13 @@ export const handleEvent = async (event) => {
         details
       }
     });
+
+    io.emit('stock_updated', {
+      message: 'Stock sold',
+      product_id
+    });
+
+    return sale;
   }
 
   throw new Error('Invalid event_type');
