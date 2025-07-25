@@ -85,11 +85,15 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/simulate", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/simulate",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -128,30 +132,41 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-700">Total Products</h2>
+            <h2 className="text-lg font-semibold text-gray-700">
+              Total Products
+            </h2>
             <p className="mt-2 text-2xl font-bold text-blue-600">
               {overview.length}
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-700">Total Batches</h2>
+            <h2 className="text-lg font-semibold text-gray-700">
+              Total Batches
+            </h2>
             <p className="mt-2 text-2xl font-bold text-green-600">
               {overview.reduce((acc, item) => acc + item.batch_count, 0)}
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-700">Total Stock Value</h2>
+            <h2 className="text-lg font-semibold text-gray-700">
+              Total Stock Value
+            </h2>
             <p className="mt-2 text-2xl font-bold text-red-600">
               ₹
               {overview
-                .reduce((acc, item) => acc + parseFloat(item.total_stock_value), 0)
+                .reduce(
+                  (acc, item) => acc + parseFloat(item.total_stock_value),
+                  0
+                )
                 .toFixed(2)}
             </p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Stock Overview Chart</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Stock Overview Chart
+          </h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -159,24 +174,51 @@ const Dashboard = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="stockValue" stroke="#8884d8" name="Stock Value (₹)" />
-              <Line type="monotone" dataKey="quantity" stroke="#82ca9d" name="Available Quantity" />
+              <Line
+                type="monotone"
+                dataKey="stockValue"
+                stroke="#8884d8"
+                name="Stock Value (₹)"
+              />
+              <Line
+                type="monotone"
+                dataKey="quantity"
+                stroke="#82ca9d"
+                name="Available Quantity"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Live Stock Table</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Live Stock Table
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-100 border-b">
                 <tr>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Product ID</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Name</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Available Quantity</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Stock Value (₹)</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Batch Count</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">Actions</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Product ID
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Available Quantity
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Stock Value (₹)
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Avg. Unit Cost (₹)
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Batch Count
+                  </th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -184,8 +226,18 @@ const Dashboard = () => {
                   <tr key={idx} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2">{item.product_id}</td>
                     <td className="px-4 py-2">{item.name}</td>
-                    <td className="px-4 py-2">{item.total_quantity_available}</td>
+                    <td className="px-4 py-2">
+                      {item.total_quantity_available}
+                    </td>
                     <td className="px-4 py-2">₹{item.total_stock_value}</td>
+                    <td className="px-4 py-2">
+                      {item.total_quantity_available > 0
+                        ? `₹${(
+                            parseFloat(item.total_stock_value) /
+                            item.total_quantity_available
+                          ).toFixed(2)}`
+                        : "—"}
+                    </td>
                     <td className="px-4 py-2">{item.batch_count}</td>
                     <td className="px-4 py-2">
                       <div className="flex space-x-2">
