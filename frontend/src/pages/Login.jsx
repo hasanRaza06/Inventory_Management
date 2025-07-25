@@ -2,30 +2,42 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import Spinner from '../components/Spinner';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post('https://inventory-management-lvvi.onrender.com/api/auth/login', form);
-      if (res.data.success) {
-        toast.success(res.data.message);
-        localStorage.setItem('token',res.data.token);
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+  if (form.password.length < 6) {
+    toast.error('Password must be at least 6 characters');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const res = await axios.post('https://inventory-management-lvvi.onrender.com/api/auth/login', form);
+    if (res.data.success) {
+      toast.success(res.data.message);
+      localStorage.setItem('token', res.data.token);
+      navigate('/dashboard');
     }
-  };
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-200 to-blue-400">
+      {loading && <Spinner />}
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="flex justify-center mb-6">
           <img src="/logo.webp" alt="Logo" className="h-16" />
