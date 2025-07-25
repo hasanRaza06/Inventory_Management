@@ -23,7 +23,7 @@ const Transactions = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/ledger', {
+        const res = await axios.get('https://inventory-management-lvvi.onrender.com/api/ledger', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

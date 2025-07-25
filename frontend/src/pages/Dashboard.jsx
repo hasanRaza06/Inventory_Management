@@ -16,7 +16,7 @@ import {
   Legend,
 } from "recharts";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://inventory-management-lvvi.onrender.com");
 
 const Dashboard = () => {
   const [overview, setOverview] = useState([]);
@@ -30,7 +30,7 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/stock-overview", {
+      const res = await axios.get("https://inventory-management-lvvi.onrender.com/api/stock-overview", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +86,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/simulate",
+        "https://inventory-management-lvvi.onrender.com/api/simulate",
         payload,
         {
           headers: {

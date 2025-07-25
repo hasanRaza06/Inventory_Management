@@ -14,7 +14,7 @@ const Register = () => {
     if (form.password !== form.confirm) return toast.error("Passwords don't match");
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await axios.post('https://inventory-management-lvvi.onrender.com/api/auth/register', {
         email: form.email,
         password: form.password
       });
